@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Job Seeker Bingo (Scrappy)</title>
+  <style>
+    body { font-family: monospace; }
+    .board { display: grid; grid-template-columns: repeat(5, 120px); gap: 4px; }
+    .cell {
+      border: 1px solid #ccc;
+      padding: 10px;
+      cursor: pointer;
+      user-select: none;
+      background: #f9f9f9;
+      font-size: 14px;
+      line-height: 1.2;
+      min-height: 60px;
+    }
+    .cell.completed { background: lightgreen; }
+  </style>
+</head>
+<body>
+
+<h2>Job Seeker Bingo</h2>
+<div class="board" id="board"></div>
+
+<script>
+  const tasks = [
+    "Sent 10 high quality cold emails",
+    "Reached out to a company not hiring",
+    "Updated your LinkedIn profile",
+    "Tailored your resume to a job",
+    "Had an informational interview",
+    "Applied to a job",
+    "Followed up on an application",
+    "Wrote a cover letter",
+    "Attended a networking event",
+    "Researched a company",
+    "Practiced interview questions",
+    "Created a portfolio",
+    "Asked for a referral",
+    "Cleaned up social media",
+    "Set up job alerts",
+    "Drafted an elevator pitch",
+    "Updated your GitHub",
+    "Watched a career webinar",
+    "Reached out to a recruiter",
+    "Read an industry blog",
+    "Signed up for a course",
+    "Volunteered for relevant experience",
+    "Created a personal website",
+    "Sent a thank-you note",
+    "Prepared for a job fair"
+  ];
+
+  const boardEl = document.getElementById('board');
+
+  // Load saved state or create empty
+  const saved = JSON.parse(localStorage.getItem('bingoProgress') || '[]');
+
+  function save() {
+    localStorage.setItem('bingoProgress', JSON.stringify(progress));
+  }
+
+  // Track completed cells by index
+  let progress = saved.length === tasks.length ? saved : new Array(tasks.length).fill(false);
+
+  function checkWin() {
+    // Check rows
+    for (let r = 0; r < 5; r++) {
+      let rowComplete = true;
+      for (let c = 0; c < 5; c++) {
+        if (!progress[r * 5 + c]) rowComplete = false;
+      }
+      if (rowComplete) return true;
+    }
+    // Check columns
+    for (let c = 0; c < 5; c++) {
+      let colComplete = true;
+      for (let r = 0; r < 5; r++) {
+        if (!progress[r * 5 + c]) colComplete = false;
+      }
+      if (colComplete) return true;
+    }
+    return false;
+  }
+
+  function render() {
+    boardEl.innerHTML = '';
+    tasks.forEach((task, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (progress[i] ? ' completed' : '');
+      cell.textContent = task;
+      cell.onclick = () => {
+        progress[i] = !progress[i];
+        save();
+        render();
+        if (checkWin()) alert('🎉 You completed a full row and column! Bingo!');
+      };
+      boardEl.appendChild(cell);
+    });
+  }
+
+  render();
+</script>
+
+</body>
+</html>
